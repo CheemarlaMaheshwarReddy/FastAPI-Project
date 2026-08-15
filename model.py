@@ -40,7 +40,7 @@ class User(Base):
     email = Column(String(100), nullable=False)
     password = Column(String(100), nullable=False)
     created_at = Column(
-        DateTime(timezone=True),
+        DateTime,
           default=datetime.now
           )
     products = relationship("Product", back_populates="owner")
@@ -50,11 +50,11 @@ class Product(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(100), nullable=False)
-    description = Column(String(255), nullable=False)
+    description = Column(String(255), nullable=True)
     price = Column(Numeric, nullable=False)
     quantity = Column(Integer, nullable=False)
     created_at = Column(
-        DateTime,
+        DateTime(timezone=True),
           default=datetime.now
           )
 
