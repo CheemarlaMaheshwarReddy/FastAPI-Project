@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Query, HTTPException, Depends
 from auth import get_current_user
 from pydantic import BaseModel
-from model import SessionLocal, Product, User, Vote
+from model import get_db, Product, User, Vote
 from sqlalchemy import func
 
 
@@ -25,9 +25,9 @@ class ProductResponse(BaseModel):
 @router.get("/", response_model=list[ProductResponse])
 def get_products(
     skip: int=Query(0, ge=0), 
-    limit: int=Query(10, ge=1, le=100)
-    ):
-    db = SessionLocal()
+    limit: int=Query(10, ge=1, le=100),
+    db = Depends(get_db)
+):
     products = (
     db.query(
         Product.id,
@@ -71,8 +71,9 @@ class ProductUpdate(BaseModel):
 
 
 @router.put("/{product_id}")
-def update_product(product_id: int, product_data: ProductUpdate, user: User = Depends(get_current_user)):
-    db = SessionLocal()
+def update_product(product_id: int, product_data: ProductUpdate, user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
     product = db.query(Product).filter(Product.id == product_id).first()
 
     if product is None:
@@ -93,8 +94,9 @@ def update_product(product_id: int, product_data: ProductUpdate, user: User = De
     return product
 
 @router.delete("/{product_id}")
-def delete_product(product_id: int, user: User = Depends(get_current_user)):
-    db = SessionLocal()
+def delete_product(product_id: int, user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
     product = db.query(Product).filter(Product.id == product_id).first()
 
     if product is None:
@@ -119,9 +121,9 @@ def get_user_products(user: User = Depends(get_current_user)):
 def vote_product(
     product_id: int,
     vote_data: VoteCcreate,
-    user: User = Depends(get_current_user)
-    ):
-    db = SessionLocal()
+    user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
     product = db.query(Product).filter(
         Product.id == product_id
     ).first()

@@ -2,7 +2,7 @@ from fastapi import Depends, HTTPException
 from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer
-from model import SessionLocal, User
+from model import User, get_db
 from dotenv import load_dotenv
 import os
 
@@ -25,7 +25,10 @@ def create_access_token(data: dict):
         algorithm=ALGORITHM
     )
     return token
-def get_current_user(token: str = Depends(oauth2_scheme)):
+def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db = Depends(get_db)
+):
     try:
         payload = jwt.decode(
             token,
@@ -40,17 +43,14 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
                 status_code=401,
                 detail="Invalid token"
             )
-        db = SessionLocal()
-        user = db.query(User).filter(User.id == 4).first()
-        print("User:", user.email)
-        for product in user.products:
-            print(product.name)
-            
+        user = db.query(User).filter(User.id == user_id).first()
+
         if user is None:
             raise HTTPException(
                 status_code=401,
                 detail="Invalid token"
-                )
+            )
+
         return user
 
     except JWTError:

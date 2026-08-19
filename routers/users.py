@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-from model import SessionLocal, User
+from model import get_db, User
 from utils import pwd_context
 from jose import jwt
 from datetime import datetime, timedelta, timezone
@@ -23,8 +23,9 @@ class UserResponse(BaseModel):
     email: str
 
 @router.post("/login")
-def login(user: OAuth2PasswordRequestForm = Depends()):
-    db = SessionLocal()
+def login(user: OAuth2PasswordRequestForm = Depends(),
+    db = Depends(get_db)
+):
     db_user = db.query(User).filter(User.email == user.username
                                     ).first()
     if db_user is None:

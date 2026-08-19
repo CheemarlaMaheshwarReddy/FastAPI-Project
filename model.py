@@ -66,3 +66,11 @@ class Product(Base):
     owner = relationship("User", back_populates="products")
 
 SessionLocal = sessionmaker(bind=engine)
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
