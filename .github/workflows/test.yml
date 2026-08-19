@@ -16,15 +16,15 @@ jobs:
           POSTGRES_PASSWORD: FastAPI123
           POSTGRES_DB: fastapi_test_db
         ports:
-          - 5433:5432
+          - 5432:5432
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U fastapi_user -d fastapi_test_db"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
 
     env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_URL: postgresql://fastapi_user:FastAPI123@localhost:5432/fastapi_test_db
 
     steps:
       - name: Checkout code
@@ -41,7 +41,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Check PostgreSQL
-        run: pg_isready -h localhost -p 5433
+        run: pg_isready -h localhost -p 5432 -U fastapi_user -d fastapi_test_db
 
       - name: Run tests
         run: pytest -v
