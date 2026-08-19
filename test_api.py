@@ -1,3 +1,4 @@
+import os
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -8,7 +9,8 @@ from model import Base, User, get_db
 from utils import pwd_context
 
 
-TEST_DATABASE_URL = (
+TEST_DATABASE_URL = os.getenv(
+    "TEST_DATABASE_URL",
     "postgresql://fastapi_user:FastAPI123@localhost:5433/fastapi_test_db"
 )
 

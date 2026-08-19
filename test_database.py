@@ -1,3 +1,4 @@
+import os
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -6,8 +7,10 @@ from model import Base, User
 from utils import pwd_context
 
 
-TEST_DATABASE_URL = "postgresql://fastapi_user:FastAPI123@localhost:5433/fastapi_test_db"
-
+TEST_DATABASE_URL = os.getenv(
+     "TEST_DATABASE_URL",
+     "postgresql://fastapi_user:FastAPI123@localhost:5433/fastapi_test_db"
+)
 test_engine = create_engine(TEST_DATABASE_URL)
 
 TestingSessionLocal = sessionmaker(bind=test_engine)
