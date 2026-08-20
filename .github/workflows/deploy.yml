@@ -30,8 +30,8 @@ jobs:
 
       - name: Restart FastAPI
         run: |
-          sudo systemctl restart fastapi
-          sudo systemctl status fastapi --no-pager
+          sudo -n systemctl restart fastapi
+          sudo -n systemctl status fastapi --no-pager
 
       - name: Verify FastAPI
         run: |
