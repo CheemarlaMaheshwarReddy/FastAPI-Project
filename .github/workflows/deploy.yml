@@ -5,13 +5,30 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, fastapi]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy to Ubuntu server
+      - name: Check Python
+        run: python3 --version
+
+      - name: Install dependencies
         run: |
-          echo "Ubuntu deployment step"
-          echo "This is where SSH deployment commands will run"
+          source /home/maheshwar/FastAPI-Project/venv/bin/activate
+          python -m pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          source /home/maheshwar/FastAPI-Project/venv/bin/activate
+          python -m pytest -v
+
+      - name: Restart FastAPI
+        run: |
+          sudo systemctl restart fastapi
+          sudo systemctl status fastapi --no-pager
+
+      - name: Verify FastAPI
+        run: |
+          curl --fail http://127.0.0.1:8000/docs
