@@ -1,0 +1,17 @@
+name: FastAPI Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Ubuntu server
+        run: |
+          echo "Ubuntu deployment step"
+          echo "This is where SSH deployment commands will run"
