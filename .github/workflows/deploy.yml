@@ -31,8 +31,20 @@ jobs:
       - name: Restart FastAPI
         run: |
           sudo -n systemctl restart fastapi
-          sudo -n systemctl status fastapi --no-pager
 
       - name: Verify FastAPI
         run: |
-          curl --fail http://127.0.0.1:8000/docs
+         for i in {1..30}; do
+           if  curl --fail --silent --show-error http://127.0.0.1:8000/docs > /dev/null; then
+              echo "FastAPI is ready"
+              exit 0
+            fi
+            echo "FastAPI not ready yet...attempt $i/30"
+            sleep 1
+          done
+
+          echo "FastAPI failed to become ready"
+          sudo -n systemctl status fastapi --no-pager -l
+          sudo -n journalctl -u fastapi -n 50 --no-pager
+          exit 1
+
